@@ -1,17 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+workout_one:
+  name: Morning Workout
+  description: Running and stretching
+  sets: 3
+  reps: 10
+  date: <%= Date.today %>
+  user: user_one
 
-one:
-  name: MyString
-  description: MyText
-  sets: 9.99
-  reps: 9.99
-  date: 2024-12-21
-  user: one
-
-two:
-  name: MyString
-  description: MyText
-  sets: 9.99
-  reps: 9.99
-  date: 2024-12-21
-  user: two
+workout_two:
+  name: Evening Workout
+  description: Weight lifting
+  sets: 4
+  reps: 8
+  date: <%= Date.today %>
+  user: user_two
