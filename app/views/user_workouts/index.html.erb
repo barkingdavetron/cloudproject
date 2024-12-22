@@ -1,0 +1,11 @@
+<h1>Your Workouts</h1>
+<%= link_to "New Workout", new_user_workout_path, class: "btn btn-primary" %>
+<ul>
+  <% @user_workouts.each do |workout| %>
+    <li>
+      <%= link_to workout.name, user_workout_path(workout) %>
+      (<%= link_to "Edit", edit_user_workout_path(workout) %> |
+       <%= link_to "Delete", user_workout_path(workout), method: :delete, data: { confirm: "Are you sure?" } %>)
+    </li>
+  <% end %>
+</ul>
