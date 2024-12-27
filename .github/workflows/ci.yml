@@ -2,18 +2,15 @@ name: Deploy to EC2 and Run Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       # Step 2: Set up Ruby environment
       - name: Set up Ruby
@@ -21,7 +18,8 @@ jobs:
         with:
           ruby-version: 3.3.2 # Replace with a Ruby version compatible with your gems
           bundler-cache: true
-
+          # Set up the Ruby environment.
+          # This step ensures the correct Ruby version is available for the project.
       # Step 3: Fix permissions for Brakeman
       - name: Fix permissions for Brakeman
         run: chmod +x bin/brakeman
@@ -30,7 +28,7 @@ jobs:
       - name: Run Brakeman security checks
         run: |
           bin/brakeman --no-pager || echo "Brakeman failed but allowing pipeline to proceed"
-
+          # Run Brakeman for security checks.
       # Step 5: Set up SSH agent for EC2 deployment
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.5.3
@@ -40,27 +38,21 @@ jobs:
       # Step 6: Deploy to EC2 instance
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@54.91.216.27 << 'EOF'
-          # Ensure the project directory exists, or clone the repository
+          ssh -o StrictHostKeyChecking=no ubuntu@184.72.103.226 << 'EOF'
+          # ensure the project directory exists or clone the repository
           if [ ! -d "~/cloudproject" ]; then
             git clone https://github.com/barkingdavetron/cloudproject.git ~/cloudproject
           fi
-
-          # Navigate to the project directory
+          # navigate to the project directory
           cd ~/cloudproject
-
-          # Pull the latest changes from the repository
+          # pull the latest changes from the repository
           git pull origin main
-
-          # Install dependencies
+          # install dependencies
           bundle install --deployment --without development test
-
-          # Precompile assets for production
+          # assets for production
           RAILS_ENV=production bundle exec rails assets:precompile
-
-          # Run database migrations
+          # run database migrations
           RAILS_ENV=production bundle exec rails db:migrate
-
-          # Restart the Rails server
+          # restart the Rails server
           sudo systemctl restart puma || echo "Puma restart failed, check the server logs for details."
           EOF

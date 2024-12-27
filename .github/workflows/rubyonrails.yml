@@ -1,15 +1,11 @@
-# This workflow uses actions that are not certified by GitHub.  They are
-# provided by a third-party and are governed by separate terms of service,
-# privacy policy, and support documentation.
-#
-# This workflow will install a prebuilt Ruby version, install dependencies, and
-# run tests and linters.
 name: "Ruby on Rails CI"
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -28,15 +24,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      # Add or replace dependency steps here
+
+      # Step 1: Install Ruby and gems
       - name: Install Ruby and gems
-        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410 # v1.179.1
+        uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.3.2 # Use a compatible Ruby version
           bundler-cache: true
-      # Add or replace database setup steps here
+
+      # Step 2: Fix permissions for Rails scripts
+      - name: Fix permissions for Rails scripts
+        run: chmod +x bin/*
+
+      # Step 3: Set up database schema
       - name: Set up database schema
         run: bin/rails db:schema:load
-      # Add or replace test runners here
+
+      # Step 4: Run tests
       - name: Run tests
         run: bin/rake
 
@@ -45,16 +49,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # Step 1: Install Ruby and gems
       - name: Install Ruby and gems
-        uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410 # v1.179.1
+        uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.3.2 # Use a compatible Ruby version
           bundler-cache: true
+
+      # Step 2: Fix permissions for Rails scripts
+      - name: Fix permissions for Rails scripts
+        run: chmod +x bin/*
+
+      # Step 3: Generate binstubs
       - name: Generate binstubs
         run: bundle binstubs bundler-audit brakeman rubocop
-      # Add or replace any other lints here
+
+      # Step 4: Security audit dependencies
       - name: Security audit dependencies
         run: bin/bundler-audit --update
+
+      # Step 5: Security audit application code
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
+
+      # Step 6: Lint Ruby files
       - name: Lint Ruby files
         run: bundle exec rubocop --auto-correct-all --disable-uncorrectable
