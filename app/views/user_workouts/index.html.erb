@@ -7,8 +7,9 @@
     <%= link_to "New Workout", new_user_workout_path, class: "btn btn-primary" %>
   </div>
 
-  <!-- List of workouts -->
+  <!-- list of workouts -->
   <div class="list-group">
+  <!-- loop through each workout belonging to the user -->
     <% @user_workouts.each do |workout| %>
       <div class="list-group-item">
         <!--  workout name and action buttons -->

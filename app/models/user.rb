@@ -1,7 +1,10 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # Represents the User model storing user data and logic.
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-         has_many :user_workouts, dependent: :destroy
+  # Devise modules for user authentication and account management.
+
+  has_many :user_workouts, dependent: :destroy
+  # A user can have many workouts deleting a user removes their workouts.
 end
