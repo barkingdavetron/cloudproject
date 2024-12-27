@@ -1,20 +1,47 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container">
-    <a class="navbar-brand" href="#"><i class="fas fa-dumbbell"></i> Workout Tracker</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- brand logo and name -->
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-dumbbell"></i> Workout Tracker
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <% if user_signed_in? %>
-          <li class="nav-item"><%= link_to 'Dashboard', root_path, class: 'nav-link' %></li>
-          <li class="nav-item"><%= link_to 'Profile', edit_user_registration_path, class: 'nav-link' %></li>
-          <li class="nav-item"><%= link_to 'Sign Out', destroy_user_session_path, method: :delete, class: 'nav-link' %></li>
-          <li class="nav-item"><%= link_to 'User Workouts', user_workouts_path, class: 'nav-link' %></li>
+        <!--  navbar for a signed in user -->
+
+          <li class="nav-item">
+            <!--  link to the dashboard -->
+            <%= link_to 'Dashboard', root_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <!--  link to the profile edit page -->
+            <%= link_to 'Profile', edit_user_registration_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <!--  logout button -->
+            <%= form_with url: destroy_user_session_path, method: :delete, class: "d-inline" do %>
+              <button type="submit" class="btn btn-link nav-link">Sign Out</button>
+            <% end %>
+          </li>
+          <li class="nav-item">
+            <!--  link to user workouts -->
+            <%= link_to 'User Workouts', user_workouts_path, class: 'nav-link' %>
+          </li>
         <% else %>
-          <li class="nav-item"><%= link_to 'Sign In', new_user_session_path, class: 'nav-link' %></li>
-          <li class="nav-item"><%= link_to 'Sign Up', new_user_registration_path, class: 'nav-link' %></li>
-          
+        <!--  navbar for a not signed in user user -->
+
+          <li class="nav-item">
+            <!--  link to the sign in page -->
+            <%= link_to 'Sign In', new_user_session_path, class: 'nav-link' %>
+          </li>
+          <li class="nav-item">
+            <!--  link to the sign up page -->
+            <%= link_to 'Sign Up', new_user_registration_path, class: 'nav-link' %>
+          </li>
         <% end %>
       </ul>
     </div>
