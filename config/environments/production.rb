@@ -78,11 +78,10 @@ Rails.application.configure do
 
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
-  
-  Rails.application.configure do
-    # Allow requests from the specified hostname
-    config.hosts << "ec2-184-72-103-226.compute-1.amazonaws.com"
-  
-    # Skip DNS rebinding protection for specific health check endpoints if needed
-    # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-  end
+
+  # Allow requests from the specified hostname
+  config.hosts << "ec2-184-72-103-226.compute-1.amazonaws.com"
+
+  # Skip DNS rebinding protection for specific health check endpoints if needed
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
