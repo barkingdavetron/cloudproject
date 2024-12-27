@@ -1,0 +1,52 @@
+name: "Deploy to EC2"
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Environment Variables
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHPRIVATE }}
+        run: |
+          # Save the SSH private key and set the permissions
+          echo "$SSH_PRIVATE_KEY" > Key.pem
+          chmod 600 Key.pem
+
+      - name: Deploy to EC2
+        env:
+          PUBLIC_IP: 54.91.216.27
+        run: |
+          # SSH into the EC2 instance
+          ssh -o StrictHostKeyChecking=no -i Key.pem ubuntu@$PUBLIC_IP << 'EOF'
+            set -e  # Exit on error
+            # Navigate to project directory (if it exists) or clone the repository
+            if [ ! -d "/home/ubuntu/cloudproject" ]; then
+              git clone https://github.com/barkingdavetron/cloudproject.git /home/ubuntu/cloudproject
+            fi
+            cd /home/ubuntu/cloudproject
+
+            # Pull latest changes
+            git pull origin main
+
+            # Install dependencies
+            bundle install
+
+            # Set up the database
+            rails db:migrate
+
+            # Start the application (production mode)
+            RAILS_ENV=production bundle exec rails s -b 0.0.0.0 -p 80
+EOF
+
+      - name: Clean up
+        run: |
+          # Remove the SSH private key after use
+          rm -f Key.pem
