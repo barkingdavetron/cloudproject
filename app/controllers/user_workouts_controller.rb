@@ -1,7 +1,7 @@
 class UserWorkoutsController < ApplicationController
   # Ensures the user is authenticated before accessing any action in this controller.
   before_action :authenticate_user!
-  # Sets the specific workout for actions like show, edit update and destroy.
+  # Sets the specific workout for actions like show edit update  destroy.
   before_action :set_user_workout, only: %i[show edit update destroy]
 
   def index
@@ -10,7 +10,7 @@ class UserWorkoutsController < ApplicationController
   end
 
   def show
-    # Displays details for a single workout. The workout is already set by set_user_workout.
+    # Displays details for a single workout. 
   end
 
   def new

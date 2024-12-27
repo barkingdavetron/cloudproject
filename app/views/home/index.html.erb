@@ -1,20 +1,30 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+ 
   <title>Workout Tracker</title>
-
-
+  <!-- linking to the bootstrap css file -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
-<body>
+<body class="bg-light text-center">
+  <!-- setting the background color to light and centering the content -->
 
-
-  <main class="container mt-4">
-    <div class="text-center">
-      <h1>Welcome to Workout Tracker</h1>
-      <p>Your tool for tracking workouts and progress!</p>
-      <a href="<%= new_user_session_path %>" class="btn btn-primary">Login</a>
-      <a href="<%= new_user_registration_path %>" class="btn btn-secondary">Sign Up</a>
+  <main class="container py-5">
+    <!-- main container with some padding added -->
+    <div class="card shadow-sm border-0">
+      <!-- using a bootstrap card with a slight shadow and no border -->
+      <div class="card-body">
+        <!-- the card body contains all the content -->
+        <h1 class="display-5 text-primary mb-3">Welcome to Workout Tracker</h1>
+        <!-- main heading  -->
+        <p class="lead text-secondary mb-4">Your tool for tracking workouts and progress!</p>
+        <a href="<%= new_user_session_path %>" class="btn btn-primary btn-lg me-2">Login</a>
+        <!-- button for login with primary style, large size, and some margin on the right -->
+        <a href="<%= new_user_registration_path %>" class="btn btn-outline-secondary btn-lg">Sign Up</a>
+        <!-- button for signing up  -->
+      </div>
     </div>
   </main>
 
-
 </body>
-
+</html>
