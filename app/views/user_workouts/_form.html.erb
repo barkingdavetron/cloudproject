@@ -1,28 +1,31 @@
-<%= form_with(model: user_workout, local: true) do |form| %>
-  <!-- form for workouts includes variables for name description sets reps and date -->
-
-    <p>
-      <%= form.label :name %><br>
-      <%= form.text_field :name %>
-    </p>
-    <p>
-      <%= form.label :description %><br>
-      <%= form.text_area :description %>
-    </p>
-    <p>
-      <%= form.label :sets %><br>
-      <%= form.number_field :sets %>
-    </p>
-    <p>
-      <%= form.label :reps %><br>
-      <%= form.number_field :reps %>
-    </p>
-    <p>
-      <%= form.label :date %><br>
-      <%= form.date_select :date %>
-    </p>
-    <p>
-      <%= form.submit %>
-    </p>
-  <% end %>
-  
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <!-- Center the form vertically and horizontally -->
+  <div>
+    <%= form_with(model: user_workout, local: true) do |form| %>
+      <!-- Form for workouts includes variables for name, description, sets, reps, and date -->
+      <p>
+        <%= form.label :name %><br>
+        <%= form.text_field :name %>
+      </p>
+      <p>
+        <%= form.label :description %><br>
+        <%= form.text_area :description %>
+      </p>
+      <p>
+        <%= form.label :sets %><br>
+        <%= form.number_field :sets %>
+      </p>
+      <p>
+        <%= form.label :reps %><br>
+        <%= form.number_field :reps %>
+      </p>
+      <p>
+        <%= form.label :date %><br>
+        <%= form.date_select :date %>
+      </p>
+      <p>
+        <%= form.submit %>
+      </p>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<h2 class="text-center">Sign Up</h2>
+
+<!-- full-page centering using flexbox -->
+<div class="d-flex justify-content-center align-items-center vh-100">
+  
+  <!-- card container for the sign-up form -->
+  <!-- dds padding, width constraints and a styled box look -->
+  <div class="card p-4" style="max-width: 400px; width: 100%;">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'needs-validation' }) do |f| %>
+      <!-- render error messages -->
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <!-- email field -->
+      <div class="mb-3">
+        <%= f.label :email, class: 'form-label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control', required: true %>
+      </div>
+
+      <!-- password field -->
+      <div class="mb-3">
+        <%= f.label :password, class: 'form-label' %>
+        <% if @minimum_password_length %>
+          <small class="text-muted d-block mb-2">(<%= @minimum_password_length %> characters minimum)</small>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password", class: 'form-control', required: true %>
+      </div>
+
+      <!-- password confirmation field -->
+      <div class="mb-3">
+        <%= f.label :password_confirmation, class: 'form-label' %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control', required: true %>
+      </div>
+
+      <!-- submit button -->
+      <div class="d-grid">
+        <%= f.submit "Sign Up", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+
+    <!-- additional links (e.g., log in, forgot password) -->
+    <div class="mt-3 text-center">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

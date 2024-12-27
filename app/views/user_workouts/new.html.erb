@@ -1,2 +1,14 @@
-<h1>New Workout</h1>
-<%= render 'form', user_workout: @user_workout %>
+<!-- Center the content while accounting for the navbar's height -->
+<div class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 56px); margin-top: 56px;">
+  
+  <!-- Container to limit the width of the content and ensure responsiveness -->
+  <div style="max-width: 600px; width: 100%;">
+    
+    <!-- Page header for the New Workout form, centered horizontally -->
+    <h1 class="text-center">New Workout</h1>
+    
+    <!-- Render the reusable form partial for creating or editing workouts -->
+    <%= render 'form', user_workout: @user_workout %>
+    
+  </div>
+</div>
