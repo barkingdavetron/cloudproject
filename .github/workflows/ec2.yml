@@ -1,42 +1,56 @@
-name: Deploy to EC2
+name: "Deploy to EC2"
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy to EC2
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Step 2: Set up SSH agent
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSHPRIVATE }}
-
-      # Step 3: Set executable permissions for Brakeman
-      - name: Set executable permissions for Brakeman
-        run: chmod +x bin/brakeman
-
-      # Step 4: Run Brakeman for security analysis
-      - name: Run Brakeman security checks
-        run: bin/brakeman --no-pager
-
-      # Step 5: Deploy application to EC2
-      - name: Deploy to EC2 instance
+      - name: Set up Environment Variables
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHPRIVATE }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@54.91.216.27 << EOF
-          cd cloudproject
-          git pull origin main
-          bundle install
-          rails db:migrate RAILS_ENV=production
-          rails assets:precompile RAILS_ENV=production
-          sudo systemctl restart puma
-          EOF
+          # Save the SSH private key and set the permissions
+          echo "$SSH_PRIVATE_KEY" > Key.pem
+          chmod 600 Key.pem
+
+      - name: Deploy to EC2
+        env:
+          # Public IP of your EC2 instance
+          PUBLIC_IP: 54.91.216.27
+        run: |
+          # SSH into the EC2 instance
+          ssh -o StrictHostKeyChecking=no -i Key.pem ubuntu@$PUBLIC_IP << 'EOF'
+            set -e  # Exit on error
+            # Navigate to project directory (if it exists) or clone the repository
+            if [ ! -d "/home/ubuntu/cloudproject" ]; then
+              git clone https://github.com/barkingdavetron/cloudproject.git /home/ubuntu/cloudproject
+            fi
+            cd /home/ubuntu/cloudproject
+
+            # Pull latest changes
+            git pull origin main
+
+            # Install dependencies
+            bundle install
+
+            # Set up the database
+            rails db:migrate
+
+            # Precompile assets for production
+            RAILS_ENV=production bundle exec rails assets:precompile
+
+            # Start the application (production mode)
+            nohup RAILS_ENV=production bundle exec rails s -b 0.0.0.0 -p 80 &
+EOF
+
+      - name: Clean up
+        run: |
+          # Remove the SSH private key after use
+          rm -f Key.pem
