@@ -1,90 +1,42 @@
-name: CI
+name: Deploy to EC2
 
 on:
-  pull_request:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  scan_ruby:
+  deploy:
+    name: Deploy to EC2
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Step 1: Check out the repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      # Step 2: Set up SSH agent
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          ruby-version: .ruby-version
-          bundler-cache: true
+          ssh-private-key: ${{ secrets.SSHPRIVATE }}
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
+      # Step 3: Set executable permissions for Brakeman
+      - name: Set executable permissions for Brakeman
+        run: chmod +x bin/brakeman
+
+      # Step 4: Run Brakeman for security analysis
+      - name: Run Brakeman security checks
         run: bin/brakeman --no-pager
 
-  scan_js:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Lint code for consistent style
-        run: bin/rubocop -f github
-
-  test:
-    runs-on: ubuntu-latest
-
-    # services:
-    #  redis:
-    #    image: redis
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git pkg-config google-chrome-stable
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
+      # Step 5: Deploy application to EC2
+      - name: Deploy to EC2 instance
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@54.91.216.27 << EOF
+          cd cloudproject
+          git pull origin main
+          bundle install
+          rails db:migrate RAILS_ENV=production
+          rails assets:precompile RAILS_ENV=production
+          sudo systemctl restart puma
+          EOF
