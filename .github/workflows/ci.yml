@@ -19,7 +19,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0 # Replace with your project's Ruby version
+          ruby-version: 3.3.2 # Replace with a Ruby version compatible with your gems
           bundler-cache: true
 
       # Step 3: Fix permissions for Brakeman
@@ -41,8 +41,13 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@54.91.216.27 << 'EOF'
+          # Ensure the project directory exists, or clone the repository
+          if [ ! -d "~/cloudproject" ]; then
+            git clone https://github.com/barkingdavetron/cloudproject.git ~/cloudproject
+          fi
+
           # Navigate to the project directory
-          cd ~/cloudproject || exit
+          cd ~/cloudproject
 
           # Pull the latest changes from the repository
           git pull origin main
@@ -51,11 +56,11 @@ jobs:
           bundle install --deployment --without development test
 
           # Precompile assets for production
-          rails assets:precompile RAILS_ENV=production
+          RAILS_ENV=production bundle exec rails assets:precompile
 
           # Run database migrations
-          rails db:migrate RAILS_ENV=production
+          RAILS_ENV=production bundle exec rails db:migrate
 
           # Restart the Rails server
-          sudo systemctl restart puma
+          sudo systemctl restart puma || echo "Puma restart failed, check the server logs for details."
           EOF
