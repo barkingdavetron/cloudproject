@@ -31,7 +31,7 @@ jobs:
           # Run Brakeman for security checks.
       # Step 5: Set up SSH agent for EC2 deployment
       - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSHPRIVATE }}
 
